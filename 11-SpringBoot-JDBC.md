@@ -39,13 +39,15 @@ top: false
 1. 加入数据库驱动
 2. 配置文件中加入如下配置,springboot会自动装配.
 3. spring在给我们装配好datasource的同时,会给我们装配一个JDBCTEMPLATE
-```
+
+```yaml
 spring.datasource.driverClassName=com.mysql.jdbc.Driver
 spring.datasource.url=jdbc:mysql://127.0.0.1:3306/springboot
 spring.datasource.username=root
 spring.datasource.password=xiaojie1996
 ```
-```
+
+```java
 package com.clsaa.edu.springboot;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -73,36 +75,37 @@ public class App {
 
 ### 11.2.1 插入数据
 
-```
-    public void addProduct(String name){
-        String sql = "insert into product (pname)values('"+name+"')";
-        jdbcTemplate.execute(sql);
-    }
+```java
+public void addProduct(String name){
+    String sql = "insert into product (pname)values('"+name+"')";
+    jdbcTemplate.execute(sql);
+}
 ```
 
 ## 11.3 使用其他数据源
 
 - 默认支持四种
-```
-	@Configuration
-	@Conditional(PooledDataSourceCondition.class)
-	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
-			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
-			DataSourceConfiguration.Generic.class })
-	protected static class PooledDataSourceConfiguration {
 
-	}
+```java
+@Configuration
+@Conditional(PooledDataSourceCondition.class)
+@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
+@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
+        DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
+        DataSourceConfiguration.Generic.class })
+protected static class PooledDataSourceConfiguration {
+}
 ```
+
 - springboot默认使用org.apache.tomcat.jdbc.pool.DataSource
 - 在配置文件中添加spring.datasource.type=com.zaxxer.hikari.HikariDataSource
 - 添加maven依赖
 
-```
-    <dependency>
-        <groupId>com.zaxxer</groupId>
-        <artifactId>HikariCP</artifactId>
-    </dependency>
+```xml
+<dependency>
+    <groupId>com.zaxxer</groupId>
+    <artifactId>HikariCP</artifactId>
+</dependency>
 ```
 
 ### 11.3.1 引入默认不支持的数据源
@@ -110,7 +113,7 @@ public class App {
 - 引入maven依赖
 - 编写配置类
 
-```
+```java
 package com.clsaa.edu.springboot;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -149,7 +152,7 @@ public class DBConfiguration {
 - 可以通过@Transactional(rollbackFor = Exception.class)回滚所有异常或不回滚哪些异常
 - 要想使用事务生效,必须在直接调用的方法上有@Transactional注解,而间接调用的方法无所谓
 
-```
+```java
 package com.clsaa.edu.springboot;
 
 import org.springframework.boot.SpringApplication;
